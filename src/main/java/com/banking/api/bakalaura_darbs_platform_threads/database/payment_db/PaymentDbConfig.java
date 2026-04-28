@@ -88,6 +88,7 @@ public class PaymentDbConfig {
                 .password(paymentDbProperties.getDbPassword())
                 .build();
         dataSource.setConnectionTimeout(paymentDbProperties.getConnectionTimeout());
+        dataSource.setMaximumPoolSize(paymentDbProperties.getPoolSize());
         dataSource.addDataSourceProperty("options", postgresOptions);
         return dataSource;
     }

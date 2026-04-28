@@ -17,6 +17,7 @@ public class PaymentDbProperties {
     private String dbDriverClassName;
     private int connectionTimeout;
     private int statementTimeout;
+    private int poolSize;
     private Hibernate hibernateProperties;
 
     @Getter
