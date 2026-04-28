@@ -15,6 +15,8 @@ public class PaymentDbProperties {
     private String dbUsername;
     private String dbPassword;
     private String dbDriverClassName;
+    private int connectionTimeout;
+    private int statementTimeout;
     private Hibernate hibernateProperties;
 
     @Getter
@@ -26,5 +28,6 @@ public class PaymentDbProperties {
         private String hb2ddl;
         private boolean showSql;
         private boolean formatSql;
+        private int jdbcHibernateTimeout;
     }
 }

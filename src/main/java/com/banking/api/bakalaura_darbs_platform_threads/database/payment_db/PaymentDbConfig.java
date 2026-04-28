@@ -30,10 +30,14 @@ import java.util.Objects;
 public class PaymentDbConfig {
     private final PaymentDbProperties paymentDbProperties;
     private final PaymentDbLiquibaseProperties paymentDbLiquibaseProperties;
+    private String postgresOptions;
 
     public PaymentDbConfig(PaymentDbProperties paymentDbProperties, PaymentDbLiquibaseProperties paymentDbLiquibaseProperties) {
         this.paymentDbProperties = paymentDbProperties;
         this.paymentDbLiquibaseProperties = paymentDbLiquibaseProperties;
+
+        postgresOptions = String.format("-c statement_timeout=%d",
+                paymentDbProperties.getStatementTimeout());
     }
 
     @Bean(name = "paymentDbEntityManager")
@@ -50,6 +54,7 @@ public class PaymentDbConfig {
         properties.put("hibernate.order_inserts", true);
         properties.put("hibernate.order_updates", true);
         properties.put("hibernate.connection.release_mode", "after_transaction");
+        properties.put("hibernate.jdbc.timeout", paymentDbProperties.getHibernateProperties().getJdbcHibernateTimeout());
         em.setDataSource(paymentDbDataSource());
         em.setPackagesToScan("com.banking.api.bakalaura_darbs_platform_threads.database.payment_db.entity");
         em.setJpaVendorAdapter(vendorAdapter);
@@ -76,22 +81,28 @@ public class PaymentDbConfig {
     @Bean(name = "paymentDbDataSource")
     @Primary
     public DataSource paymentDbDataSource() {
-        return DataSourceBuilder.create()
+        HikariDataSource dataSource = DataSourceBuilder.create()
                 .type(HikariDataSource.class)
                 .url(paymentDbProperties.getDbURL())
                 .username(paymentDbProperties.getDbUsername())
                 .password(paymentDbProperties.getDbPassword())
                 .build();
+        dataSource.setConnectionTimeout(paymentDbProperties.getConnectionTimeout());
+        dataSource.addDataSourceProperty("options", postgresOptions);
+        return dataSource;
     }
 
     @Bean(name = "paymentDbLiquibaseDataSource")
     public DataSource paymentDbLiquibaseDataSource() {
-        return DataSourceBuilder.create()
+        HikariDataSource dataSource = DataSourceBuilder.create()
                 .type(HikariDataSource.class)
                 .url(paymentDbProperties.getDbURL())
                 .username(paymentDbProperties.getDbUsername())
                 .password(paymentDbProperties.getDbPassword())
                 .build();
+        dataSource.setConnectionTimeout(paymentDbProperties.getConnectionTimeout());
+        dataSource.addDataSourceProperty("options", postgresOptions);
+        return dataSource;
     }
 
 //    @Bean(name = "paymentDbLiquibase")

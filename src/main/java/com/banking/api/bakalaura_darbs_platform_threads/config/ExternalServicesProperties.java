@@ -11,5 +11,7 @@ public class ExternalServicesProperties {
     private String baseUrl;
     private String login;
     private String password;
+    private int connectionTimeout;
+    private int readTimeout;
 
 }
