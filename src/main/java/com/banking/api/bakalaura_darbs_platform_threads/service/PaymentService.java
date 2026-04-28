@@ -78,13 +78,13 @@ public class PaymentService {
         return Boolean.TRUE.equals(fraudResponse.isFraud());
     }
 
-    @Transactional
+//    @Transactional
     public PaymentResponse getPaymentById(UUID id) {
         Payment payment = customPaymentDao.findPaymentById(id);
         return toResponse(payment);
     }
 
-    @Transactional(readOnly = true)
+//    @Transactional(readOnly = true)
     public Page<PaymentResponse> search(Pageable pageable) {
         return paymentRepository.findAll(pageable).map(this::toResponse);
     }

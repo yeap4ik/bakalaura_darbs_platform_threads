@@ -20,7 +20,6 @@ public class PaymentDbService {
         this.paymentRepository = paymentRepository;
     }
 
-    @Transactional
     public Payment createPendingPayment(CreatePaymentRequest request, Account senderAccount, Account receiverAccount) {
         Payment payment = Payment.createPending(senderAccount, receiverAccount, request);
         return paymentRepository.save(payment);

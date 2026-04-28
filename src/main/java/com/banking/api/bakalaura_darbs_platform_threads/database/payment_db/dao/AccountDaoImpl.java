@@ -12,7 +12,6 @@ public class AccountDaoImpl implements CustomAccountDao {
     }
 
     @Override
-    @Transactional(readOnly = true)
     public Account findAccountById(Long id) {
         return accountRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("Account with ID " + id + " not found"));
     }
