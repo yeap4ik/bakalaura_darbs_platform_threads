@@ -8,12 +8,14 @@ import org.springframework.web.client.RestClientException;
 @Component
 public class ExternalServiceClient {
     private final RestClient restClient;
+    private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(ExternalServiceClient.class);
 
     public ExternalServiceClient(RestClient externalServicesRestClient) {
         this.restClient = externalServicesRestClient;
     }
 
     public <T> T post(String uri, Object requestBody, Class<T> responseType, String errorMessage) {
+        log.info("Processing post http call, thread name={} (virtual={})", Thread.currentThread().getName(), Thread.currentThread().isVirtual());
         try {
             T response = restClient.post()
                     .uri(uri)

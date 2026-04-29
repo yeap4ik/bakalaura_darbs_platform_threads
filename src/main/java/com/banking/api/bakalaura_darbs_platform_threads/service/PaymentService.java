@@ -1,6 +1,6 @@
 package com.banking.api.bakalaura_darbs_platform_threads.service;
 
-import com.banking.api.bakalaura_darbs_platform_threads.database.payment_db.dao.CustomPaymentDao;
+import com.banking.api.bakalaura_darbs_platform_threads.database.payment_db.repository.CustomPaymentDao;
 import com.banking.api.bakalaura_darbs_platform_threads.database.payment_db.entity.Account;
 import com.banking.api.bakalaura_darbs_platform_threads.database.payment_db.repository.AccountRepository;
 import com.banking.api.bakalaura_darbs_platform_threads.dto.external.BankTransferRequest;
@@ -16,7 +16,6 @@ import com.banking.api.bakalaura_darbs_platform_threads.exception.BadRequestExce
 import com.banking.api.bakalaura_darbs_platform_threads.exception.ExternalServiceException;
 import com.banking.api.bakalaura_darbs_platform_threads.exception.FraudDetectedException;
 import com.banking.api.bakalaura_darbs_platform_threads.service.integration.BankServiceClient;
-import com.banking.api.bakalaura_darbs_platform_threads.database.payment_db.repository.PaymentRepository;
 import java.math.BigDecimal;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
@@ -30,15 +29,14 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class PaymentService {
 
+    private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(PaymentService.class);
     private static final String BANK_STATUS_APPROVED = "APPROVED";
     private static final String LOYALTY_STATUS_SUCCESS = "SUCCESS";
 
-    private final PaymentRepository paymentRepository;
     private final BankServiceClient bankServiceClient;
     private final FraudServiceClient fraudServiceClient;
     private final LoyaltyServiceClient loyaltyServiceClient;
@@ -48,7 +46,6 @@ public class PaymentService {
     private final PaymentDbService paymentDbService;
 
     public PaymentService(
-            PaymentRepository paymentRepository,
             BankServiceClient bankServiceClient,
             FraudServiceClient fraudServiceClient,
             LoyaltyServiceClient loyaltyServiceClient,
@@ -56,7 +53,6 @@ public class PaymentService {
             CustomPaymentDao customPaymentDao,
             AccountRepository accountRepository,
             PaymentDbService paymentDbService) {
-        this.paymentRepository = paymentRepository;
         this.bankServiceClient = bankServiceClient;
         this.fraudServiceClient = fraudServiceClient;
         this.loyaltyServiceClient = loyaltyServiceClient;
@@ -80,17 +76,20 @@ public class PaymentService {
 
 //    @Transactional
     public PaymentResponse getPaymentById(UUID id) {
+        log.info("Processing db search getPaymentById, thread name={} (virtual={})", Thread.currentThread().getName(), Thread.currentThread().isVirtual());
         Payment payment = customPaymentDao.findPaymentById(id);
         return toResponse(payment);
     }
 
 //    @Transactional(readOnly = true)
     public Page<PaymentResponse> search(Pageable pageable) {
-        return paymentRepository.findAll(pageable).map(this::toResponse);
+        log.info("Processing db heavy search, thread name={} (virtual={})", Thread.currentThread().getName(), Thread.currentThread().isVirtual());
+        return customPaymentDao.findPayments(pageable).map(this::toResponse);
     }
 
 
     public PaymentResponse createPayment(CreatePaymentRequest request) {
+        log.info("Processing post payment, thread name={} (virtual={})", Thread.currentThread().getName(), Thread.currentThread().isVirtual());
         validateCreatePaymentRequest(request);
         Account senderAccount = accountRepository.findAccountById(request.senderAccountId());
         Account receiverAccount = accountRepository.findAccountById(request.receiverAccountId());
@@ -144,10 +143,10 @@ public class PaymentService {
         return toResponse(updated);
     }
 
-    protected Payment createPendingPayment(CreatePaymentRequest request, Account senderAccount, Account recieverAccount) {
-        Payment payment = Payment.createPending(senderAccount, recieverAccount, request);
-        return paymentRepository.save(payment);
-    }
+//    protected Payment createPendingPayment(CreatePaymentRequest request, Account senderAccount, Account recieverAccount) {
+//        Payment payment = Payment.createPending(senderAccount, recieverAccount, request);
+//        return paymentRepository.save(payment);
+//    }
 
     private void validateCreatePaymentRequest(CreatePaymentRequest request) {
         if (request == null) {

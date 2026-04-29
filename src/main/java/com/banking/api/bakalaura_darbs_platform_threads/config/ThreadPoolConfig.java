@@ -2,6 +2,7 @@ package com.banking.api.bakalaura_darbs_platform_threads.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.task.VirtualThreadTaskExecutor;
 import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 
@@ -14,7 +15,6 @@ public class ThreadPoolConfig {
     @Bean(name = "paymentParallelExecutor")
     public Executor paymentParallelExecutor() {
         ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
-
         // Default core pool size:
         executor.setCorePoolSize(50);
 
@@ -29,4 +29,10 @@ public class ThreadPoolConfig {
         executor.initialize();
         return executor;
     }
+
+
+//    @Bean(name = "paymentParallelExecutor")
+//    public Executor paymentParallelExecutor() {
+//        return new VirtualThreadTaskExecutor("Payment-VT-");
+//    }
 }
