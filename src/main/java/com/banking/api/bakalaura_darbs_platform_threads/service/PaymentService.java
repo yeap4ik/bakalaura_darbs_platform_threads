@@ -26,8 +26,8 @@ import com.banking.api.bakalaura_darbs_platform_threads.service.integration.Frau
 import com.banking.api.bakalaura_darbs_platform_threads.service.integration.LoyaltyServiceClient;
 import org.slf4j.helpers.MessageFormatter;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -82,7 +82,7 @@ public class PaymentService {
     }
 
 //    @Transactional(readOnly = true)
-    public Page<PaymentResponse> search(Pageable pageable) {
+    public Slice<PaymentResponse> search(Pageable pageable) {
         log.info("Processing db heavy search, thread name={} (virtual={})", Thread.currentThread().getName(), Thread.currentThread().isVirtual());
         return customPaymentDao.findPayments(pageable).map(this::toResponse);
     }
