@@ -33,7 +33,7 @@ import org.springframework.stereotype.Service;
 @Service
 public class PaymentService {
 
-    private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(PaymentService.class);
+//    private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(PaymentService.class);
     private static final String BANK_STATUS_APPROVED = "APPROVED";
     private static final String LOYALTY_STATUS_SUCCESS = "SUCCESS";
 
@@ -76,20 +76,20 @@ public class PaymentService {
 
 //    @Transactional
     public PaymentResponse getPaymentById(UUID id) {
-        log.info("Processing db search getPaymentById, thread name={} (virtual={})", Thread.currentThread().getName(), Thread.currentThread().isVirtual());
+//        log.info("Processing db search getPaymentById, thread name={} (virtual={})", Thread.currentThread().getName(), Thread.currentThread().isVirtual());
         Payment payment = customPaymentDao.findPaymentById(id);
         return toResponse(payment);
     }
 
 //    @Transactional(readOnly = true)
     public Slice<PaymentResponse> search(Pageable pageable) {
-        log.info("Processing db heavy search, thread name={} (virtual={})", Thread.currentThread().getName(), Thread.currentThread().isVirtual());
+//        log.info("Processing db heavy search, thread name={} (virtual={})", Thread.currentThread().getName(), Thread.currentThread().isVirtual());
         return customPaymentDao.findPayments(pageable).map(this::toResponse);
     }
 
 
     public PaymentResponse createPayment(CreatePaymentRequest request) {
-        log.info("Processing post payment, thread name={} (virtual={})", Thread.currentThread().getName(), Thread.currentThread().isVirtual());
+//        log.info("Processing post payment, thread name={} (virtual={})", Thread.currentThread().getName(), Thread.currentThread().isVirtual());
         validateCreatePaymentRequest(request);
         Account senderAccount = accountRepository.findAccountById(request.senderAccountId());
         Account receiverAccount = accountRepository.findAccountById(request.receiverAccountId());
