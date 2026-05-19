@@ -11,7 +11,7 @@ import org.springframework.stereotype.Repository;
 public class CustomPaymentDaoImpl implements CustomPaymentDao {
 
     private final PaymentRepository paymentRepository;
-    private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(CustomPaymentDaoImpl.class);
+//    private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(CustomPaymentDaoImpl.class);
 
     public CustomPaymentDaoImpl(PaymentRepository paymentRepository) {
         this.paymentRepository = paymentRepository;
@@ -19,14 +19,14 @@ public class CustomPaymentDaoImpl implements CustomPaymentDao {
 
     @Override
     public Payment findPaymentById(UUID id){
-        log.info("Processing db search findPaymentById, thread name={} (virtual={})", Thread.currentThread().getName(), Thread.currentThread().isVirtual());
+//        log.info("Processing db search findPaymentById, thread name={} (virtual={})", Thread.currentThread().getName(), Thread.currentThread().isVirtual());
         return paymentRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Payment not found: " + id));
     }
 
     @Override
     public Slice<Payment> findPayments(Pageable pageable) {
-        log.info("Processing db search findPayments, thread name={} (virtual={})", Thread.currentThread().getName(), Thread.currentThread().isVirtual());
+//        log.info("Processing db search findPayments, thread name={} (virtual={})", Thread.currentThread().getName(), Thread.currentThread().isVirtual());
         return paymentRepository.findBy(pageable);
     }
 }
